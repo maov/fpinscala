@@ -75,4 +75,10 @@ object List { // `List` companion object. Contains functions for creating and wo
       case Nil => Nil
       case Cons(h, t) => Cons(f(h), map(t)(f))
     }
+
+  def concatLists[A](l: List[List[A]]) : List[A] =
+    l match {
+      case Cons(h,t) => List.foldLeft(t, h)((a,b) => List.append(a,b))
+      case Nil => Nil
+    }
 }

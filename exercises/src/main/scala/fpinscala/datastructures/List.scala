@@ -56,7 +56,7 @@ object List { // `List` companion object. Contains functions for creating and wo
 
   def setHead[A](l: List[A], h: A): List[A] = Cons(h, l) 
 
-  def drop[A](l: List[A], n: Int): List[A] = List.drop(l.tail, n -1)
+//  def drop[A](l: List[A], n: Int): List[A] = List.drop(l.tail, n -1)
 
   def dropWhile[A](l: List[A], f: A => Boolean): List[A] = ???
 
@@ -70,9 +70,10 @@ object List { // `List` companion object. Contains functions for creating and wo
        case Cons(h, t) => foldLeft(t, f(z, h))(f)
     }
 
-  def map[A,B](l: List[A])(f: A => B): List[B] = 
+ /* def map[A,B](l: List[A])(f: A => B): List[B] = 
     l match {
       case Nil => Nil
       case Cons(h, t) => Cons(f(h), map(h)(f))
     }
+    */
 }
