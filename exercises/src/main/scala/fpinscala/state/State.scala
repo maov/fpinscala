@@ -65,6 +65,29 @@ object RNG {
     (f(a,b), rng2)
   }
 
+
+//go to end return A, RNG, use RNG on previous element, and return A, RNG etc.
+//going left we would need a value, the rng input, and then call on tail, with new rng2 until empty then produce a List[A]
+def sequenceS[A](fs: List[Rand[A]]): Rand[List[A]] = rng =>
+{
+  fs match {
+    case h :: t =>  ???
+    case _ => (List[A], rng)
+
+  }
+  
+}
+
+
+
+
+
+
+
+
+
+
+
   def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = 
   fs match {
     // Rand[A], Rand[List[A]] => Rand[List[A]]
@@ -104,7 +127,7 @@ case class State[S,+A](run: S => (A, S)) {
     val (a,s2) = run(s)
     (f(a),s2)
   })
-//    ???
+
   def map2[B,C](sb: State[S, B])(f: (A, B) => C): State[S, C] =
     flatMap(a => sb.map(b => f(a,b) ))
   def flatMap[B](f: A => State[S, B]): State[S, B] = State(
@@ -116,11 +139,28 @@ case class State[S,+A](run: S => (A, S)) {
     
 }
 
+
+
 sealed trait Input
 case object Coin extends Input
 case object Turn extends Input
 
 case class Machine(locked: Boolean, candies: Int, coins: Int)
+
+// State[Machine, (Int, Int)] = Machine => ((Int,Int), Machine)
+// Machine is the state which is supplied "after" so function should be ala. List[input] => (Machine => .......)
+// the output can be read from the machine i guess at the last step
+object Machine
+{ 
+  def change(m: Machine, i: Input) : Machine =
+  (m,i) match {
+    case (Machine(true, ca, _), Coin) if ca > 0 => m.copy(locked=false)
+    case (Machine(false, ca, co), Turn)  => Machine(true, ca - 1, co + 1)
+    case (_,_) => m   
+  }
+
+}
+
 
 object State {
   type Rand[A] = State[RNG, A]
