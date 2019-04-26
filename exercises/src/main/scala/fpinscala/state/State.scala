@@ -66,27 +66,6 @@ object RNG {
   }
 
 
-//go to end return A, RNG, use RNG on previous element, and return A, RNG etc.
-//going left we would need a value, the rng input, and then call on tail, with new rng2 until empty then produce a List[A]
-def sequenceS[A](fs: List[Rand[A]]): Rand[List[A]] = rng =>
-{
-  fs match {
-    case h :: t =>  ???
-    case _ => (List[A], rng)
-
-  }
-  
-}
-
-
-
-
-
-
-
-
-
-
 
   def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = 
   fs match {
@@ -122,6 +101,7 @@ def sequenceS[A](fs: List[Rand[A]]): Rand[List[A]] = rng =>
   )
 }
 //type Rand[A] = State[RNG, A]
+//State[RNG,Int]
 case class State[S,+A](run: S => (A, S)) {
   def map[B](f: A => B): State[S, B] = State(s => {
     val (a,s2) = run(s)
@@ -136,8 +116,11 @@ case class State[S,+A](run: S => (A, S)) {
       f(a).run(s2)
       }
   )
+
+  
     
 }
+
 
 
 
@@ -158,11 +141,19 @@ object Machine
     case (Machine(false, ca, co), Turn)  => Machine(true, ca - 1, co + 1)
     case (_,_) => m   
   }
-
 }
 
 
 object State {
   type Rand[A] = State[RNG, A]
   def simulateMachine(inputs: List[Input]): State[Machine, (Int, Int)] = ???
+
+  def sequence[S, A](sas: List[State[S, A]]): State[S, List[A]] = {
+    def go(s: S, actions: List[State[S,A]], acc: List[A]): (List[A],S) =
+      actions match {
+        case Nil => (acc.reverse,s)
+        case h :: t => h.run(s) match { case (a,s2) => go(s2, t, a :: acc) }
+      }
+    State((s: S) => go(s,sas,List()))
+  }
 }
